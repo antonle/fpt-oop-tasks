@@ -1,4 +1,4 @@
-#include "./header/Management.h"
+#include "Management.h"
 
 int main() {
 	Management mObj;

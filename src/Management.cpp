@@ -1,151 +1,155 @@
-#include <iostream>
-
 #include "Management.h"
-#include "Worker.h"
-#include "Engineer.h"
-#include "Staff.h"
 
-Management::Management() {}
+void Management::addNewBook(const std::string& code, const std::string& publisher, int count, const std::string& author, int paper_count) {
+	map_[code] = std::shared_ptr<Material>(new Book(code, publisher, count, author, paper_count));
+}
 
-Management::~Management() {
-	for (int i = 0; i < list_.size(); ++i) {
-		delete list_[i];
+void Management::addNewJournal(const std::string& code, const std::string& publisher, int count, int month, int number) {
+	map_[code] = std::shared_ptr<Material>(new Journal(code, publisher, count, month, number));
+}
+
+void Management::addNewNewspaper(const std::string& code, const std::string& publisher, int count, const std::string& date) {
+	map_[code] = std::shared_ptr<Material>(new Newspaper(code, publisher, count, date));
+}
+
+void Management::printMenu() {
+	std::cout << "1. Add new material.\n";
+	std::cout << "2. Delete material.\n";
+	std::cout << "3. Show indo.\n";
+	std::cout << "4. Find by type.\n";
+	std::cout << "5. Exit\n";
+	std::cout << "\n";
+}
+
+void Management::getInfoforInsertion() {
+	std::cout << "Which type would you like to add?(book, journal, newspaper) ";
+	std::string type;
+	std::cin >> type;
+
+	std::cout << "What is the code for the material? ";
+	std::string code;
+	std::cin.ignore();
+	std::getline(std::cin, code);
+
+	std::cout << "Who is the publisher? ";
+	std::string publisher;
+	std::cin.ignore();
+	std::getline(std::cin, publisher);
+
+	std::cout << "How many copies were published? ";
+	int count;
+	std::cin >> count;
+
+	if (type == "book") {
+		std::cout << "Who is the author? ";
+		std::string author;
+		std::cin.ignore();
+		std::getline(std::cin, author);
+
+		std::cout << "How many papers are in the book? ";
+		int paper_count;
+		std::cin >> paper_count;
+		addNewBook(code, publisher, count, author, paper_count);
 	}
+	else if (type == "journal") {
+		std::cout << "What month was the journal published in? ";
+		int month;
+		std::cin >> month;
+
+		std::cout << "What is the number of the journal? ";
+		int number;
+		std::cin >> number;
+
+		addNewJournal(code, publisher, count, month, number);
+	}
+	else if (type == "newspaper") {
+		std::cout << "What is the date of the publish? ";
+		std::string date;
+		std::cin.ignore();
+		std::getline(std::cin, date);
+
+		addNewNewspaper(code, publisher, count, date);
+	}
+
+	std::cout << '\n';
 }
 
-void Management::addNewWorker(const std::string& name, int age, Sex sex, const std::string& address, int level) {
-	list_.push_back(new Worker(name, age, sex, address, level));
+void Management::deleteMaterial() {
+	std::cout << "What is the code of the material you want to delete? ";
+	std::string code;
+	std::cin.ignore();
+	std::getline(std::cin, code);
+
+	if (!map_.count(code)) {
+		std::cout << "No such material\n";
+		return;
+	}
+
+	map_.erase(code);
 }
 
-void Management::addNewEngineer(const std::string& name, int age, Sex sex, const std::string& address, const std::string& major) {
-	list_.push_back(new Engineer(name, age, sex, address, major));
+void Management::showInfoByCode() {
+	std::cout << "What is the code of the material you want to get? ";
+	std::string code;
+	std::cin.ignore();
+	std::getline(std::cin, code);
+
+	if (!map_.count(code)) {
+		std::cout << "No such material\n";
+		return;
+	}
+
+	map_[code]->printDetailedInfo();
 }
 
-void Management::addNewStaff(const std::string& name, int age, Sex sex, const std::string& address, const std::string& job) {
-	list_.push_back(new Staff(name, age, sex, address, job));
-}
+void Management::showByType() {
+	std::cout << "What is the type of material you want to see?";
+	std::string type;
+	std::cin >> type;
+	Type indType;
+	if (type == "book") {
+		indType = Type::BOOK;
+	}
+	else if (type == "journal") {
+		indType = Type::JOURNAL;
+	}
+	else if (type == "newspaper") {
+		indType = Type::NEWSPAPER;
+	}
 
-void Management::find(const std::string& name) {
-	for (int i = 0; i < list_.size(); ++i) {
-		if (list_[i] != nullptr && list_[i]->getName() == name) {
-			list_[i]->printDetailedInfo();
+	for (auto [key, value]: map_) {
+		if (value->getType() == indType) {
+			value->printDetailedInfo();
 		}
 	}
 }
 
-void Management::printAll() const {
-	for (int i = 0; i < list_.size(); ++i) {
-		if (list_[i] != nullptr) {
-			list_[i]->printDetailedInfo();
-		}
-	}
+void Management::exit() {
+	is_done_ = true;
 }
 
 void Management::run() {
-	int option = 0;
-	isDone = false;
-	while (!isDone) {
+	int option;
+	is_done_ = false;
+	while (!is_done_) {
 		printMenu();
-		option = getOption();
+		std::cout << "Please pick an option: ";
+		std::cin >> option;
+		std::cout << '\n';
 		if (option == 1) {
-			getEmployeeInfo();
+			getInfoforInsertion();
 		}
 		else if (option == 2) {
-			std::string name = getNameToFind();
-			find(name);
+			deleteMaterial();
 		}
 		else if (option == 3) {
-			printAll();
+			showInfoByCode();
 		}
-		else {
-			done();
+		else if (option == 4) {
+			showByType();
+		}
+		else if (option == 5) {
+			exit();
 		}
 	}
-}
-
-void Management::printMenu() const {
-	std::cout << "1. Add New Employee\n";
-	std::cout << "2. Find Employee\n";
-	std::cout << "3. Print All Employees\n";
-	std::cout << "4. Exit\n";
-	std::cout << '\n';
-}
-
-int Management::getOption() const {
-	std::cout << "Pick an option: ";
-	int option;
-	std::cin >> option;
-	std::cout << '\n';
-	return option;
-}
-
-void Management::getEmployeeInfo() {
-	std::cout << "What position do you want to add?(engineer, worker, staff) ";
-	std::string position;
-	std::cin >> position;
-
-	std::cout << "Enter name: ";
-	std::string name;
-	std::cin.ignore();
-	std::getline(std::cin, name);
-
-	std::cout << "Enter age: ";
-	int age;
-	std::cin >> age;
-
-	std::cout << "Enter sex(male, female, other): ";
-	std::string sex;
-	std::cin >> sex;
-	Sex indSex;
-	if (sex == "male") {
-		indSex = Sex::MALE;
-	}
-	else if (sex == "female") {
-		indSex = Sex::FEMALE;
-	}
-	else if (sex == "other") {
-		indSex = Sex::OTHER;
-	}
-
-	std::cout << "Enter address: ";
-	std::string address;
-	std::cin.ignore();
-	std::getline(std::cin, address);
-
-	if (position == "worker") {
-		std::cout << "State your level: ";
-		int level;
-		std::cin >> level;
-		addNewWorker(name, age, indSex, address, level);
-	}
-	else if (position == "engineer") {
-		std::cout << "State your major: ";
-		std::string major;
-		std::cin.ignore();
-		std::getline(std::cin, major);
-		addNewEngineer(name, age, indSex, address, major);
-	}
-	else if (position == "staff") {
-		std::cout << "State yout job: ";
-		std::string job;
-		std::cin.ignore();
-		std::getline(std::cin, job);
-		addNewStaff(name, age, indSex, address, job);
-	}
-
-	std::cout << '\n' << '\n';
-}
-
-std::string Management::getNameToFind() const {
-	std::cout << "Which name do you want to find? ";
-	std::string name;
-	std::cin.ignore();
-	std::getline(std::cin, name);
-	std::cout << '\n';
-
-	return name;
-}
-
-void Management::done() {
-	isDone = true;
 }

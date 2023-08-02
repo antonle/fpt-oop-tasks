@@ -1,39 +1,30 @@
 #pragma once
 
-#include <vector>
+#include <unordered_map>
+#include <memory>
 
-#include "Employee.h"
+#include "Material.h"
+#include "Book.h"
+#include "Journal.h"
+#include "Newspaper.h"
 
 class Management {
 public:
-	Management();
-
-	~Management();
-
 	void run();
 
 private:
-	void addNewWorker(const std::string& name, int age, Sex sex, const std::string& address, int level);
+	void addNewBook(const std::string& code, const std::string& publisher, int count, const std::string& author, int paper_count);
+	void addNewJournal(const std::string& code, const std::string& publisher, int count, int month, int number);
+	void addNewNewspaper(const std::string& code, const std::string& publisher, int count, const std::string& date);
+	void addNewMaterial();
 
-	void addNewEngineer(const std::string& name, int age, Sex sex, const std::string& address, const std::string& major);
+	void printMenu();
+	void getInfoforInsertion();
+	void deleteMaterial();
+	void showInfoByCode();
+	void showByType();
+	void exit();
 
-	void addNewStaff(const std::string& name, int age, Sex sex, const std::string& address, const std::string& job);
-
-	void find(const std::string& name);
-
-	void printAll() const;
-
-	void printMenu() const;
-
-	int getOption() const;
-
-	void getEmployeeInfo();
-
-	std::string getNameToFind() const;
-
-	void done();
-
-	std::vector<Employee*> list_;
-	bool isDone;
+	std::unordered_map<std::string, std::shared_ptr<Material>> map_;
+	bool is_done_;
 };
-
