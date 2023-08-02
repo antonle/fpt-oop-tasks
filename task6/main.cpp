@@ -1,0 +1,6 @@
+#include "Management.h"
+
+int main() {
+	Management mObj;
+	mObj.run();
+}
