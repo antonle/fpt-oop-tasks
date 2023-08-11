@@ -1,0 +1,3 @@
+/home/anton/fpt_mock/music/songs/hay_trao_cho_anh.mp3
+/home/anton/fpt_mock/music/songs/e_ko_quay_ve.mp3
+/home/anton/fpt_mock/music/songs/waiting_for_you.mp3
